@@ -122,6 +122,12 @@
   #timerVal { font-size: clamp(18px, 5vw, 26px); font-variant-numeric: tabular-nums; }
   #timerVal.low { color: var(--danger); animation: pulse 0.6s infinite; }
   @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.15);} }
+  /* for elements centred with translateX(-50%): a plain scale keyframe would
+     replace the centring transform and shove them off to the right */
+  @keyframes pulseCentered {
+    0%,100% { transform: translateX(-50%) scale(1); }
+    50%     { transform: translateX(-50%) scale(1.08); }
+  }
   #livesWrap { font-size: clamp(13px, 3.4vw, 16px); letter-spacing: 2px; }
 
   /* streak meter */
@@ -176,7 +182,7 @@
     box-shadow: 0 4px 20px rgba(255,180,0,0.5);
     white-space: nowrap;
   }
-  #goldenBanner.show { opacity: 1; transform: translateX(-50%) scale(1); animation: pulse 0.7s infinite; }
+  #goldenBanner.show { opacity: 1; transform: translateX(-50%) scale(1); animation: pulseCentered 0.7s infinite; }
 
   #brainBanner {
     position: absolute;
@@ -395,27 +401,6 @@
     white-space: nowrap;
   }
 
-  #reloadHint {
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-    position: absolute;
-    bottom: calc(14px + var(--safe-b));
-    left: 50%;
-    transform: translateX(-50%);
-    color: #fff;
-    padding: 9px 20px;
-    border-radius: 999px;
-    font-size: clamp(13px, 3.6vw, 15px);
-    font-weight: 600;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.2s;
-    pointer-events: all;
-    touch-action: manipulation;
-    white-space: nowrap;
-  }
-  #reloadHint.show { opacity: 1; }
-
   #reloadBtn, #muteBtn {
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
@@ -448,6 +433,125 @@
     overflow: hidden;
   }
   #reloadBtn:active, #muteBtn:active { transform: scale(0.92); }
+
+  #settingsBtn {
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    position: absolute;
+    bottom: calc(14px + var(--safe-b));
+    right: calc(70px + var(--safe-r));
+    z-index: 31;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform 0.15s ease;
+  }
+  #settingsBtn:active { transform: scale(0.92); }
+
+  #audioPanel {
+    position: absolute;
+    bottom: calc(72px + var(--safe-b));
+    right: calc(14px + var(--safe-r));
+    z-index: 30;   /* above the menu sheet (20) so the sliders stay usable */
+    width: min(78vw, 250px);
+    padding: 14px 16px;
+    border-radius: 22px;
+    color: #fff;
+    background: rgba(14, 20, 46, 0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .volRow { display: flex; flex-direction: column; gap: 6px; }
+  .volLabel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .volLabel span:last-child { opacity: 0.75; font-variant-numeric: tabular-nums; }
+  input[type="range"].vol {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 26px;
+    background: transparent;
+    cursor: pointer;
+    touch-action: manipulation;
+    margin: 0;
+  }
+  input[type="range"].vol::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.22);
+  }
+  input[type="range"].vol::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -8px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #fff, #cfe6ff);
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  }
+  input[type="range"].vol::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.22);
+  }
+  input[type="range"].vol::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  }
+
+  /* big, unmissable prompt when the magazine runs dry */
+  #reloadBig {
+    position: absolute;
+    top: 54%;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: calc(100% - 28px);
+    z-index: 13;
+    color: #fff;
+    background: rgba(255, 69, 58, 0.86);
+    border: 2px solid rgba(255,255,255,0.85);
+    border-radius: 999px;
+    padding: 14px clamp(20px, 6vw, 34px);
+    font-size: clamp(20px, 5.5vw, 32px);
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.45);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+    cursor: pointer;
+    pointer-events: all;
+    touch-action: manipulation;
+    white-space: nowrap;
+    animation: pulse 0.7s infinite;
+  }
+  #reloadBig .reloadSub {
+    display: block;
+    font-size: 0.42em;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    opacity: 0.92;
+    margin-top: 2px;
+    text-align: center;
+  }
 
   .reloadInner {
     position: relative;
@@ -525,13 +629,26 @@
   <div id="levelUpMsg">LEVEL UP!</div>
   <div id="goldenBanner">🌟 GOLDEN ROUND ×2 🌟</div>
   <div id="brainBanner" class="glass" style="border-radius:999px;"></div>
-  <div id="reloadHint" class="glass" style="border-radius:999px;">Tap here (or press R) to reload!</div>
 
   <button id="reloadBtn" class="glass" style="border-radius:999px;" title="Reload">
     <span class="reloadFill" id="reloadFill"></span>
     <span class="reloadInner">🔄 <span class="reloadLabel">Reload</span></span>
   </button>
   <button id="muteBtn" class="glass" style="border-radius:50%;" title="Mute/unmute">🔊</button>
+  <button id="settingsBtn" class="glass" style="border-radius:50%;" title="Volume settings">🎚️</button>
+
+  <div id="audioPanel" class="glass hidden" style="border-radius:22px;">
+    <div class="volRow">
+      <label class="volLabel" for="sfxVol"><span>🔊 Sound Effects</span><span id="sfxVolVal">80%</span></label>
+      <input id="sfxVol" class="vol" type="range" min="0" max="100" step="5" value="80">
+    </div>
+    <div class="volRow">
+      <label class="volLabel" for="musicVol"><span>🎵 Music</span><span id="musicVolVal">50%</span></label>
+      <input id="musicVol" class="vol" type="range" min="0" max="100" step="5" value="50">
+    </div>
+  </div>
+
+  <div id="reloadBig" class="hidden">🔄 RELOAD!<span class="reloadSub">Tap here or press R</span></div>
 
   <div id="centerMsg" class="glass" style="border-radius:34px;">
     <div id="menuScreen">
@@ -588,10 +705,16 @@
   const overScreen = document.getElementById('overScreen');
   const startBtn = document.getElementById('startBtn');
   const levelUpMsg = document.getElementById('levelUpMsg');
-  const reloadHint = document.getElementById('reloadHint');
   const reloadBtn = document.getElementById('reloadBtn');
   const reloadFill = document.getElementById('reloadFill');
   const muteBtn = document.getElementById('muteBtn');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const audioPanel = document.getElementById('audioPanel');
+  const sfxVolSlider = document.getElementById('sfxVol');
+  const musicVolSlider = document.getElementById('musicVol');
+  const sfxVolVal = document.getElementById('sfxVolVal');
+  const musicVolVal = document.getElementById('musicVolVal');
+  const reloadBig = document.getElementById('reloadBig');
   const lbContent = document.getElementById('lbContent');
 
   const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
@@ -603,16 +726,31 @@
   }
   resize();
 
-  // ---------- Audio: master gain + synthesized SFX + chiptune music ----------
+  // ---------- Audio: master/SFX/music gains + synthesized SFX + chiptune music ----------
   let audioCtx = null;
-  let masterGain = null;
+  let masterGain = null, sfxGain = null, musicGain = null;
   let muted = false;
+  function loadVol(key, dflt) {
+    try {
+      const v = parseFloat(localStorage.getItem(key));
+      if (!isNaN(v) && v >= 0 && v <= 1) return v;
+    } catch (e) {}
+    return dflt;
+  }
+  let sfxVolume = loadVol('pelletPopSfxVol', 0.8);
+  let musicVolume = loadVol('pelletPopMusicVol', 0.5);
   function ensureAudio() {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       masterGain = audioCtx.createGain();
       masterGain.gain.value = muted ? 0 : 1;
       masterGain.connect(audioCtx.destination);
+      sfxGain = audioCtx.createGain();
+      sfxGain.gain.value = sfxVolume;
+      sfxGain.connect(masterGain);
+      musicGain = audioCtx.createGain();
+      musicGain.gain.value = musicVolume;
+      musicGain.connect(masterGain);
     }
     if (audioCtx.state === 'suspended') audioCtx.resume();
   }
@@ -625,7 +763,7 @@
     if (glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, audioCtx.currentTime + dur);
     g.gain.setValueAtTime(vol || 0.15, audioCtx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-    o.connect(g); g.connect(masterGain);
+    o.connect(g); g.connect(sfxGain);
     o.start();
     o.stop(audioCtx.currentTime + dur);
   }
@@ -656,7 +794,7 @@
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(vol, t + 0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(masterGain);
+    o.connect(g); g.connect(musicGain);
     o.start(t); o.stop(t + dur + 0.05);
   }
   function startMusic() {
@@ -682,6 +820,34 @@
     muted = !muted;
     muteBtn.textContent = muted ? '🔇' : '🔊';
     if (masterGain) masterGain.gain.value = muted ? 0 : 1;
+  });
+
+  // volume sliders (persisted, applied live)
+  settingsBtn.addEventListener('click', () => {
+    audioPanel.classList.toggle('hidden');
+  });
+  function bindVolume(slider, valEl, storageKey, initial, apply) {
+    slider.value = Math.round(initial * 100);
+    valEl.textContent = slider.value + '%';
+    const onInput = () => {
+      const v = parseInt(slider.value, 10) / 100;
+      valEl.textContent = slider.value + '%';
+      try { localStorage.setItem(storageKey, String(v)); } catch (e) {}
+      apply(v);
+    };
+    slider.addEventListener('input', onInput);
+    // keep taps on the slider from reaching the shooting handlers
+    ['mousedown', 'touchstart', 'click'].forEach(ev =>
+      slider.addEventListener(ev, e => e.stopPropagation()));
+  }
+  bindVolume(sfxVolSlider, sfxVolVal, 'pelletPopSfxVol', sfxVolume, v => {
+    sfxVolume = v;
+    if (sfxGain) sfxGain.gain.value = v;
+    if (v > 0) { ensureAudio(); sfxPop(); }   // preview the new level
+  });
+  bindVolume(musicVolSlider, musicVolVal, 'pelletPopMusicVol', musicVolume, v => {
+    musicVolume = v;
+    if (musicGain) musicGain.gain.value = v;
   });
 
   // ---------- Difficulty tuning ----------
@@ -905,6 +1071,7 @@
     brainBanner.classList.remove('show');
     roundShots = 0; roundHits = 0; roundPopped = 0; roundBestCombo = 0;
     reloadBtn.classList.remove('urgent');
+    reloadBig.classList.add('hidden');
     goldenBanner.classList.remove('show');
     hudSig = '';
     updateHud();
@@ -942,6 +1109,7 @@
     reloadBtn.classList.toggle('empty', ammo === 0);
     reloadBtn.classList.toggle('reloadingNow', reloading);
     reloadFill.style.width = Math.round((ammo / DIFF.magSize) * 100) + '%';
+    reloadBig.classList.toggle('hidden', !(state === 'playing' && ammo === 0 && !reloading));
 
     streakBar.classList.toggle('golden', golden > 0);
     streakFillEl.style.width = streakPct + '%';
@@ -1148,7 +1316,6 @@
     reloading = true;
     reloadStart = performance.now();
     sfxReload();
-    reloadHint.classList.remove('show');
     reloadBtn.classList.remove('urgent');
   }
 
@@ -1169,7 +1336,6 @@
     if (reloading) return;
     if (ammo <= 0) {
       sfxEmpty();
-      reloadHint.classList.add('show');
       reloadBtn.classList.add('urgent');
       return;
     }
@@ -1280,19 +1446,23 @@
     updateHud();
 
     if (ammo === 0) {
-      setTimeout(() => { if (state==='playing') { reloadHint.classList.add('show'); reloadBtn.classList.add('urgent'); } }, 200);
+      setTimeout(() => { if (state==='playing') reloadBtn.classList.add('urgent'); }, 200);
     }
   }
 
+  // taps on the on-screen controls must not also fire a pellet
+  const UI_CONTROLS = '#reloadBtn, #muteBtn, #settingsBtn, #reloadBig, #audioPanel';
+
   game.addEventListener('mousedown', (e) => {
     if (state !== 'playing') return;
+    if (e.target.closest(UI_CONTROLS)) return;
     const p = getPos(e);
     crosshair = p;
     shoot(p.x, p.y);
   });
   game.addEventListener('touchstart', (e) => {
     if (state !== 'playing') return;
-    if (e.target.closest('#reloadBtn, #muteBtn, #reloadHint')) return;
+    if (e.target.closest(UI_CONTROLS)) return;
     e.preventDefault();
     const p = getPos(e);
     crosshair = p;
@@ -1308,9 +1478,10 @@
     if (e.key === 'r' || e.key === 'R') tryReload();
   });
 
-  reloadHint.addEventListener('click', tryReload);
   reloadBtn.addEventListener('click', tryReload);
   reloadBtn.addEventListener('touchend', (e) => { e.preventDefault(); tryReload(); }, { passive: false });
+  reloadBig.addEventListener('click', tryReload);
+  reloadBig.addEventListener('touchend', (e) => { e.preventDefault(); tryReload(); }, { passive: false });
 
   // ---------- Main loop ----------
   function update(dt, now) {
@@ -1654,8 +1825,9 @@
     goldenBanner.classList.remove('show');
     brainBanner.classList.remove('show');
     brain = null;
-    reloadHint.classList.remove('show');
     reloadBtn.classList.remove('urgent');
+    reloadBig.classList.add('hidden');
+    audioPanel.classList.add('hidden');
     const lifetime = mergeRoundStats();
     const title = modeKey === 'ENDLESS' ? 'Out of Lives!' : "Time's Up!";
 
